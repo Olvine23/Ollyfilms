@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -29,15 +30,39 @@ class MovieApiService {
     final results = response.data['results'] as List;
     print(results);
     return results.map((json) => MovieModel.fromJson(json)).toList();
-    
+  }
+
+  //movie reccomendations
+  Future<List<MovieModel>> fetchRecommendations(int movieId) async {
+    final response = await _dio.get(
+      'https://api.themoviedb.org/3/movie/$movieId/recommendations',
+      queryParameters: {'api_key': _apiKey},
+    );
+
+    final results = response.data["results"] as List;
+
+    return results.map((json) => MovieModel.fromJson(json)).toList();
+  }
+
+  //get similar movies
+  Future<List<MovieModel>> fetchSimilar(int movieId) async {
+    final response = await _dio.get(
+      'https://api.themoviedb.org/3/movie/$movieId/similar',
+      queryParameters: {'api_key': _apiKey},
+    );
+
+    final results = response.data["results"] as List;
+
+    return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
   Future<List<MovieModel>> fetchTopRated() async {
     final response = await _dio.get(
-      'https://api.themoviedb.org/3/movie/top_rated', queryParameters: {'api_key': _apiKey}    
+      'https://api.themoviedb.org/3/movie/top_rated',
+      queryParameters: {'api_key': _apiKey},
     );
     final results = response.data['results'] as List;
- return results.map((json) => MovieModel.fromJson(json)).toList();
+    return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
   // 🔍 Search movies
@@ -47,6 +72,7 @@ class MovieApiService {
       queryParameters: {'api_key': _apiKey, 'query': query},
     );
     final results = response.data['results'] as List;
+    log(results.toString());
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 

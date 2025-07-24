@@ -1,31 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_app/features/movies/application/providers/movie_provider.dart';
 import 'package:movie_app/features/movies/application/providers/video_providers.dart';
- 
 import 'package:movie_app/features/movies/domain/entities/movie_entity.dart';
+import 'package:movie_app/features/movies/presentation/widgets/movie_carousel.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class TestDetailsScreen extends ConsumerStatefulWidget {
   final int movieId;
   final MovieEntity movie;
 
-  const TestDetailsScreen({super.key, required this.movieId, required this.movie});
+  const TestDetailsScreen({
+    super.key,
+    required this.movieId,
+    required this.movie,
+  });
 
   @override
   ConsumerState<TestDetailsScreen> createState() => _TestDetailsScreenState();
 }
 
 class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
-
   YoutubePlayerController? _controller;
-  @override
-  Widget build(BuildContext context) {
-    final allVideosAsync = ref.watch(youTubeVideosProvider(widget.movieId));
-    final mainKeyAsync = ref.watch(mainTrailerKey(widget.movieId));
-    print(allVideosAsync);
+  bool showPlayer = false;
+  bool isLoadingTrailer = false;
+  String? error;
 
-     void _playVideo(String newKey) {
-    _controller?.load(newKey);
+  Future<void> loadTrailer() async {
+    setState(() {
+      isLoadingTrailer = true;
+      error = null;
+    });
+
+    try {
+      final key = await ref.read(mainTrailerKey(widget.movieId).future);
+
+      if (key != null) {
+        _controller = YoutubePlayerController(
+          initialVideoId: key,
+          flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
+        );
+        setState(() {
+          showPlayer = true;
+        });
+      } else {
+        setState(() {
+          error = "Trailer not available.";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        error = "Error loading trailer.";
+      });
+    } finally {
+      setState(() {
+        isLoadingTrailer = false;
+      });
+    }
   }
 
   @override
@@ -34,55 +65,139 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
     super.dispose();
   }
 
-   YoutubePlayerController _buildController(String key) {
-    return YoutubePlayerController(
-      initialVideoId: key,
-      flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    final recommended = ref.watch(recommendedProvider(widget.movieId));
+
+    final similar  =ref.watch(similarMoviesProvider(widget.movieId));
+
     return Scaffold(
-      appBar: AppBar(title: Text(widget.movie.title)),
-      body: mainKeyAsync.when(
-        
-        data: (key) {
-          if (key == null) {
-            return const Center(child: Text("Trailer not available"));
-          }
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: showPlayer
+            ? null
+            : Text(
+                widget.movie.title,
+                style: const TextStyle(color: Colors.white),
+              ),
+      ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          AspectRatio(
+            aspectRatio: 14 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (showPlayer && _controller != null)
+                  SizedBox.expand(child: YoutubePlayer(controller: _controller!))
+                else
+                  Image.network(
+                    'https://image.tmdb.org/t/p/w780${widget.movie.posterUrl}',
+                    fit: BoxFit.cover,
+                  ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 120,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.black54, Colors.transparent],
+                      ),
+                    ),
+                  ),
+                ),
+                if (!showPlayer && !isLoadingTrailer)
+                  Center(
+                    child: IconButton(
+                      icon: const Icon(Icons.play_circle, size: 64, color: Colors.greenAccent),
+                      onPressed: loadTrailer,
+                    ),
+                  ),
+                if (isLoadingTrailer)
+                  const Center(child: CircularProgressIndicator()),
+                if (error != null)
+                  Center(
+                    child: Text(
+                      error!,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+              ],
+            ),
+          ),
 
-             // Init controller only once
-          if (_controller == null) {
-            _controller = _buildController(key);
-          }
-        
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              widget.movie.overview,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 14),
+            ),
+          ),
 
-          return Column(
-            children: [
-                YoutubePlayer(controller: _controller!),
-                Text(widget.movie.overview),
-              // You can use any YouTube player widget here.
-              // allVideosAsync.when(
-              //   data: (videos) => Expanded(
-              //     child: ListView.builder(
-              //       itemCount: videos.length,
-              //       itemBuilder: (_, index) {
-              //         final video = videos[index];
-              //         final key = video['key'];
-              //         return ListTile(
-              //           title: Text(video['name'] ?? 'Unnamed'),
-              //           subtitle: Text(video['type']),
-              //           onTap: () => _playVideo(key),
-              //         );
-              //       },
-              //     ),
-              //   ),
-              //   loading: () => const CircularProgressIndicator(),
-              //   error: (e, _) => Text("Error loading all videos: $e"),
-              // ),
-            ],
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text("Error fetching trailer: $e")),
+          recommended.when(
+            data: (recommendedMovies) {
+              if (recommendedMovies.isEmpty) return const SizedBox();
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: MovieCarousel(
+                  title: "Recommended Movies",
+                  movies: recommendedMovies,
+                  onTap: (movie) async {
+                    final key = await ref.read(mainTrailerKey(movie.id));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TestDetailsScreen(
+                          movieId: movie.id,
+                          movie: movie,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+            error: (e, _) => const Center(child: Text("Error occurred")),
+            loading: () => const Center(child: CircularProgressIndicator()),
+          ),
+          const SizedBox(height: 24),
+          similar.when(
+            data: (recommendedMovies) {
+              if (recommendedMovies.isEmpty) return const SizedBox();
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: MovieCarousel(
+                  title: "Movies With A Similar Vibe",
+                  movies: recommendedMovies,
+                  onTap: (movie) async {
+                    final key = await ref.read(mainTrailerKey(movie.id));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TestDetailsScreen(
+                          movieId: movie.id,
+                          movie: movie,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+            error: (e, _) => const Center(child: Text("Error occurred")),
+            loading: () => const Center(child: CircularProgressIndicator()),
+          ),
+        ],
       ),
     );
   }

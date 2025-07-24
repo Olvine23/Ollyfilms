@@ -24,6 +24,54 @@ class MovieRepositoryImpl implements MovieRepository {
   }
 
   @override
+  Future<List<MovieEntity>> getSimilar(int movieId) async {
+    final models = await apiService.fetchSimilar(movieId);
+
+    return models
+        .map(
+          (m) => MovieEntity(
+            id: m.id,
+            title: m.title,
+            overview: m.overview,
+            posterUrl: 'https://image.tmdb.org/t/p/w500${m.posterPath}',
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> search(String query) async {
+    final models = await apiService.searchMovies(query);
+
+    return models
+        .map(
+          (m) => MovieEntity(
+            id: m.id,
+            title: m.title,
+            overview: m.overview,
+            posterUrl: 'https://image.tmdb.org/t/p/w500${m.posterPath}',
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> getRecommended(int movieId) async {
+    final models = await apiService.fetchRecommendations(movieId);
+
+    return models
+        .map(
+          (m) => MovieEntity(
+            id: m.id,
+            title: m.title,
+            overview: m.overview,
+            posterUrl: 'https://image.tmdb.org/t/p/w500${m.posterPath}',
+          ),
+        )
+        .toList();
+  }
+
+  @override
   Future<List<MovieEntity>> getTopRated() async {
     final models = await apiService.fetchTopRated();
     return models

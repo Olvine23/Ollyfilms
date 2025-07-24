@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_app/features/movies/application/providers/movie_provider.dart';
+import 'package:movie_app/features/movies/application/providers/video_providers.dart';
 import 'package:movie_app/features/movies/presentation/movie_details.dart';
+import 'package:movie_app/features/movies/presentation/screens/search/search_screen.dart';
 import 'package:movie_app/features/movies/presentation/widgets/hero_card.dart';
 import 'package:movie_app/features/movies/presentation/widgets/movie_carousel.dart';
 
@@ -20,7 +22,11 @@ class HomeScreen extends ConsumerWidget {
         elevation: 0,
         actions: [Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.search, size: 30, color: Colors.white,),
+          child: GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MovieSearchScreen()))
+              
+           ,
+            child: Icon(Icons.search, size: 30, color: Colors.white,)),
         )],
         title: const Text('🎬 OllyFilms', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
       ),
@@ -47,13 +53,16 @@ class HomeScreen extends ConsumerWidget {
                 child: MovieCarousel(
                   title: 'Popular',
                   movies: popularMovies.skip(1).toList(),
-                  onTap: (movie) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          TestDetailsScreen(movieId: movie.id, movie: movie),
-                    ),
-                  ),
+                  onTap: (movie) async{
+               final key = await ref.read(mainTrailerKey(movie.id));
+                 Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      TestDetailsScreen(movieId: movie.id, movie: movie),
+                ),
+              );
+              }
                 ),
               ),
 
@@ -64,13 +73,16 @@ class HomeScreen extends ConsumerWidget {
             child: MovieCarousel(
               title: 'Top Rated',
               movies: topRatedMovies,
-              onTap: (movie) => Navigator.push(
+              onTap: (movie) async{
+               final key = await ref.read(mainTrailerKey(movie.id));
+                 Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
                       TestDetailsScreen(movieId: movie.id, movie: movie),
                 ),
-              ),
+              );
+              }
             ),
           ),
            SliverToBoxAdapter(child: SizedBox(height: 12,)),

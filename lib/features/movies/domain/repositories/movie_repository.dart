@@ -9,4 +9,10 @@ abstract class MovieRepository {
   Future<List<Genre>> getMovieGenres();
 
   Future<List<MovieEntity>> getTopRated();
+
+  Future<List<MovieEntity>> getRecommended(int movieId);
+
+   Future<List<MovieEntity>> getSimilar(int movieId);
+
+   Future<List<MovieEntity>> search(String query);
 }

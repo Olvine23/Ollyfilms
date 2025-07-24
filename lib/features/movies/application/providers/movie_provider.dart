@@ -32,3 +32,24 @@ final genreProvider = FutureProvider<List<Genre>>((ref) async{
   final repository = ref.read(movieRepositoryProvider);
   return repository.getMovieGenres();
 });
+
+final recommendedProvider = FutureProvider.family<List<MovieEntity>, int>((ref, movieId) async{
+  final repository = ref.read(movieRepositoryProvider);
+
+  return repository.getRecommended(movieId);
+});
+
+final similarMoviesProvider = FutureProvider.family<List<MovieEntity>, int>((ref, movieId) async{
+  final repository = ref.read(movieRepositoryProvider);
+
+  return repository.getSimilar(movieId);
+});
+
+final searchMoviesProvider = FutureProvider.family<List<MovieEntity>, String>((ref, query) async{
+  final repository = ref.read(movieRepositoryProvider);
+
+  return repository.search(query);
+});
+
+
+

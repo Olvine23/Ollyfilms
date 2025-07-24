@@ -1,5 +1,6 @@
  
 import 'package:flutter/material.dart';
+import 'package:movie_app/features/movies/application/extensions/extensions.dart';
 import '../../domain/entities/movie_entity.dart';
 
 class MovieCarousel extends StatelessWidget {
@@ -21,7 +22,7 @@ class MovieCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
-          child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+          child: Text(title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 18)),
         ),
         SizedBox(
           height: 200,
@@ -43,7 +44,7 @@ class MovieCarousel extends StatelessWidget {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    Text(movie.title)
+                    Text(truncateString(movie.title, 12))
                   ],
                 ),
               );
