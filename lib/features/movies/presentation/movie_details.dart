@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_app/features/movies/application/providers/movie_provider.dart';
@@ -26,6 +28,9 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
   bool isLoadingTrailer = false;
   String? error;
 
+ void _playVideo(String newKey){
+  _controller?.load(newKey);
+ }
   Future<void> loadTrailer() async {
     setState(() {
       isLoadingTrailer = true;
@@ -68,6 +73,10 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final recommended = ref.watch(recommendedProvider(widget.movieId));
+
+    final relatedVideos =  ref.watch(youTubeVideosProvider(widget.movieId));
+
+    print(relatedVideos);
 
     final similar  =ref.watch(similarMoviesProvider(widget.movieId));
 
@@ -142,6 +151,8 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
             ),
           ),
 
+
+
           recommended.when(
             data: (recommendedMovies) {
               if (recommendedMovies.isEmpty) return const SizedBox();
@@ -153,7 +164,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                   movies: recommendedMovies,
                   onTap: (movie) async {
                     final key = await ref.read(mainTrailerKey(movie.id));
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => TestDetailsScreen(
@@ -181,7 +192,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                   movies: recommendedMovies,
                   onTap: (movie) async {
                     final key = await ref.read(mainTrailerKey(movie.id));
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => TestDetailsScreen(
@@ -197,6 +208,21 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
             error: (e, _) => const Center(child: Text("Error occurred")),
             loading: () => const Center(child: CircularProgressIndicator()),
           ),
+
+  //         relatedVideos.when(data: (vid){
+  //           if(vid.isEmpty) return SizedBox();
+  //           return ListView.builder(
+  //             shrinkWrap: true,
+  // physics: NeverScrollableScrollPhysics(),
+  //             itemCount: vid.length,
+  //             itemBuilder: (context, index){
+  //                log(vid[index].toString());
+  //             return ListTile(
+  //               onTap:() => _playVideo(vid[index]['key']),
+  //               title: Text(vid[index]['name']), );
+  //           });
+  //         }, error: (e,_) => Center(child: Center(child: Text("An error occured $e"),),), loading: () => Center(child: CircularProgressIndicator(),))
+
         ],
       ),
     );

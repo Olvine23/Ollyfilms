@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MovieModel {
 
- int get id; String get title; String get overview;@JsonKey(name: 'poster_path') String get posterPath;
+ int get id; String get title; String get overview;@JsonKey(name: 'poster_path') String? get posterPath;
 /// Create a copy of MovieModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $MovieModelCopyWith<$Res>  {
   factory $MovieModelCopyWith(MovieModel value, $Res Function(MovieModel) _then) = _$MovieModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, String overview,@JsonKey(name: 'poster_path') String posterPath
+ int id, String title, String overview,@JsonKey(name: 'poster_path') String? posterPath
 });
 
 
@@ -65,13 +65,13 @@ class _$MovieModelCopyWithImpl<$Res>
 
 /// Create a copy of MovieModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? overview = null,Object? posterPath = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? overview = null,Object? posterPath = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,overview: null == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
-as String,posterPath: null == posterPath ? _self.posterPath : posterPath // ignore: cast_nullable_to_non_nullable
-as String,
+as String,posterPath: freezed == posterPath ? _self.posterPath : posterPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String posterPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String? posterPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MovieModel() when $default != null:
 return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
@@ -177,7 +177,7 @@ return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String posterPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String? posterPath)  $default,) {final _that = this;
 switch (_that) {
 case _MovieModel():
 return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
@@ -197,7 +197,7 @@ return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String posterPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String overview, @JsonKey(name: 'poster_path')  String? posterPath)?  $default,) {final _that = this;
 switch (_that) {
 case _MovieModel() when $default != null:
 return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
@@ -211,14 +211,14 @@ return $default(_that.id,_that.title,_that.overview,_that.posterPath);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _MovieModel extends MovieModel {
-  const _MovieModel({required this.id, required this.title, required this.overview, @JsonKey(name: 'poster_path') required this.posterPath}): super._();
+class _MovieModel implements MovieModel {
+  const _MovieModel({required this.id, required this.title, required this.overview, @JsonKey(name: 'poster_path') this.posterPath});
   factory _MovieModel.fromJson(Map<String, dynamic> json) => _$MovieModelFromJson(json);
 
 @override final  int id;
 @override final  String title;
 @override final  String overview;
-@override@JsonKey(name: 'poster_path') final  String posterPath;
+@override@JsonKey(name: 'poster_path') final  String? posterPath;
 
 /// Create a copy of MovieModel
 /// with the given fields replaced by the non-null parameter values.
@@ -253,7 +253,7 @@ abstract mixin class _$MovieModelCopyWith<$Res> implements $MovieModelCopyWith<$
   factory _$MovieModelCopyWith(_MovieModel value, $Res Function(_MovieModel) _then) = __$MovieModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, String overview,@JsonKey(name: 'poster_path') String posterPath
+ int id, String title, String overview,@JsonKey(name: 'poster_path') String? posterPath
 });
 
 
@@ -270,13 +270,13 @@ class __$MovieModelCopyWithImpl<$Res>
 
 /// Create a copy of MovieModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? overview = null,Object? posterPath = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? overview = null,Object? posterPath = freezed,}) {
   return _then(_MovieModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,overview: null == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
-as String,posterPath: null == posterPath ? _self.posterPath : posterPath // ignore: cast_nullable_to_non_nullable
-as String,
+as String,posterPath: freezed == posterPath ? _self.posterPath : posterPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
