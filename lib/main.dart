@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_app/features/core/theme_provider.dart';
 import 'package:movie_app/features/movies/presentation/screens/homescreen.dart';
+import 'package:movie_app/features/shared/widgets/bottom_nav.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -38,7 +39,7 @@ class MyApp extends ConsumerWidget {
     displayColor: Colors.white,),
       ),
 
-      home: const HomeScreen(),
+      home: MainNavigation(),
     );
   }
 }
