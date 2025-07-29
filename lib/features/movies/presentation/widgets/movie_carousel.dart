@@ -1,5 +1,5 @@
- 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:movie_app/features/movies/application/extensions/extensions.dart';
 import '../../domain/entities/movie_entity.dart';
 
@@ -22,7 +22,13 @@ class MovieCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 18)),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         SizedBox(
           height: 200,
@@ -38,13 +44,36 @@ class MovieCarousel extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        'https://image.tmdb.org/t/p/w500${movie.posterUrl}',
+                      child: CachedNetworkImage(
+                        imageUrl: movie.fullPosterUrl,
                         width: 120,
+                        height: 160,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          width: 120,
+                          height: 160,
+                          color: Colors.greenAccent,
+                        ),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.broken_image,
+                          size: 60,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
-                    Text(truncateString(movie.title, 12))
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      width: 120,
+                      child: Text(
+                        truncateString(movie.title, 12),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ],
                 ),
               );

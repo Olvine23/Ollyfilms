@@ -17,7 +17,7 @@ class AIRecommenderService {
   // Step 1: Ask Gemini to give 3-5 movie or show titles
   Future<List<String>> getTitlesFromGemini(String userPrompt) async {
     final prompt = Content.text(
-      "Give me 3 to 10 movie or TV show titles based on this: $userPrompt. Just return titles as a numbered list.",
+      "Give me 3 to 15 movie or TV show titles based on this: $userPrompt. Just return titles as a numbered list.",
     );
 
     final response = await _model.generateContent([prompt]);

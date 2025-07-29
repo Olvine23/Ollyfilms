@@ -43,11 +43,12 @@ class _MovieSearchScreenState extends ConsumerState<MovieSearchScreen> {
                 itemCount: movies.length,
                 itemBuilder: (context, index) {
                   final movie = movies[index];
+                  final posterUrl = movie.posterUrl;
                   return ListTile(
-                    // leading: Image.network(
-                    //   'https://image.tmdb.org/t/p/w92${movie.posterUrl}',
-                    //   fit: BoxFit.cover,
-                    // ),
+    // leading: Image.network(
+    //   'https://image.tmdb.org/t/p/w92$posterUrl',
+    //   fit: BoxFit.cover,
+    // ),
                     title: Text(movie.title),
                     onTap: () => Navigator.push(
                       context,

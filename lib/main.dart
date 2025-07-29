@@ -1,26 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:movie_app/features/core/theme_provider.dart';
 import 'package:movie_app/features/movies/presentation/screens/homescreen.dart';
-import 'package:movie_app/features/movies/presentation/screens/test_screen.dart';
 
 void main() {
-  runApp(ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Movie App',
+      debugShowCheckedModeBanner: false,
+      themeMode: themeMode, // 👈 Controls light/dark
+
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
+        textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme),
       ),
-      home: HomeScreen()
+
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.greenAccent,
+          brightness: Brightness.dark,
+        ),
+        textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme).apply( bodyColor: Colors.white,
+    displayColor: Colors.white,),
+      ),
+
+      home: const HomeScreen(),
     );
   }
 }
-
- 
