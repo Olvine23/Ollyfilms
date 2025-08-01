@@ -70,5 +70,5 @@ final paginatedPopularProvider = StateNotifierProvider<PaginatedMovieNotifier, L
 final watchProvidersProvider = FutureProvider.family<List<Map<String, dynamic>>, int>((ref, movieId) async {
   final api = ref.read(movieRepositoryProvider);
   // You can replace 'KE' with dynamic region logic
-  return await api.getWatchProviders(movieId, 'KE');
+  return await api.getWatchProviders(movieId, 'US');
 });

@@ -209,6 +209,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
           children: providers.map((p) {
             final logoUrl = 'https://image.tmdb.org/t/p/w92${p['logo_path']}';
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Image.network(logoUrl, width: 50),
                 Text(p['provider_name'], style: const TextStyle(fontSize: 12)),
