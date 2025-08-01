@@ -20,3 +20,9 @@ final mainTrailerKey = FutureProvider.family<String?, int>((
   final videos = await api.getYoutubeVideos(movieId, true);
   return api.getMainTrailerKey(videos);
 });
+
+final youtubeSearchProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>((ref, title) async {
+  final api = ref.read(apiServiceProvider);
+  return await api.searchYoutubeVideos('$title trailer');
+});

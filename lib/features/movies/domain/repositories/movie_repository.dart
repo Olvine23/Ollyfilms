@@ -15,4 +15,13 @@ abstract class MovieRepository {
    Future<List<MovieEntity>> getSimilar(int movieId);
 
    Future<List<MovieEntity>> search(String query);
+
+    Future<List<MovieEntity>> getMoviesByGenre(int genreId);
+
+      Future<List<Map<String, dynamic>>> getWatchProviders(int movieId, String countryCode);
+
+
+    
+
+
 }

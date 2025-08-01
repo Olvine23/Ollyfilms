@@ -22,10 +22,10 @@ class MovieApiService {
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
-  Future<List<MovieModel>> fetchPopularMovies() async {
+  Future<List<MovieModel>> fetchPopularMovies({int page = 1}) async {
     final response = await _dio.get(
       'https://api.themoviedb.org/3/movie/popular',
-      queryParameters: {'api_key': _apiKey},
+      queryParameters: {'api_key': _apiKey, 'page':page},
     );
     final results = response.data['results'] as List;
     print(results);
@@ -150,4 +150,44 @@ class MovieApiService {
 
     return trailer['key'];
   }
+
+  Future<List<Map<String, dynamic>>> searchYoutubeVideos(String query) async {
+  final url = 'https://www.googleapis.com/youtube/v3/search';
+  final response = await _dio.get(url, queryParameters: {
+    'key': 'AIzaSyDBYnv-CN4sytn4KuiEv7yHdZ39wpObTSE', 
+    'part': 'snippet',
+    'q': query,
+    'maxResults': 20,
+    'type': 'video',
+  });
+
+  final results = response.data['items'] as List;
+  return results.map((item) {
+    final id = item['id']['videoId'];
+    final snippet = item['snippet'];
+    return {
+      'title': snippet['title'],
+      'description': snippet['description'],
+      'thumbnail': snippet['thumbnails']['high']['url'],
+      'videoId': id,
+      'channelTitle': snippet['channelTitle'],
+      'publishedAt': snippet['publishedAt'],
+    };
+  }).toList();
+
+
+}
+
+Future<List<Map<String, dynamic>>> fetchWatchProviders(int movieId, String countryCode) async {
+  final response = await _dio.get(
+    'https://api.themoviedb.org/3/movie/$movieId/watch/providers',
+    queryParameters: {'api_key': _apiKey},
+  );
+
+  final providers = response.data['results'][countryCode]?['flatrate'] ?? [];
+  return List<Map<String, dynamic>>.from(providers);
+}
+
+
+
 }

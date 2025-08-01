@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_app/features/movies/application/providers/movie_provider.dart';
 import 'package:movie_app/features/movies/application/providers/video_providers.dart';
 import 'package:movie_app/features/movies/domain/entities/movie_entity.dart';
+import 'package:movie_app/features/movies/presentation/screens/watchlist/youtube_vids.dart';
 import 'package:movie_app/features/movies/presentation/widgets/movie_carousel.dart';
 import 'package:movie_app/features/movies/presentation/widgets/movier_caroussel_loader.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -29,9 +28,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
   bool isLoadingTrailer = false;
   String? error;
 
-  void _playVideo(String newKey) {
-    _controller?.load(newKey);
-  }
+  
 
   Future<void> loadTrailer() async {
     setState(() {
@@ -76,6 +73,8 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
   Widget build(BuildContext context) {
     final recommended = ref.watch(recommendedProvider(widget.movieId));
 
+    final watchProviders = ref.watch(watchProvidersProvider(widget.movieId));
+
     final relatedVideos = ref.watch(youTubeVideosProvider(widget.movieId));
 
     print(relatedVideos);
@@ -85,6 +84,9 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        actions: [
+          Icon(Icons.favorite, size: 30,color: Colors.greenAccent,)
+        ],
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -173,6 +175,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                     ).textTheme.titleMedium!.copyWith(fontSize: 22, fontWeight: FontWeight.w900),
                   ),
                 ),
+                SizedBox(width: 2,),
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -181,13 +184,44 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                       overlayColor: Colors.red,
                       shadowColor: Colors.greenAccent),
                     icon: Icon(Icons.video_collection, ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return YouTubeDetailsScreen(movieId: widget.movieId, movie: widget.movie);
+                      }));
+                    },
                     label: Text("More Videos"),
                   ),
                 ),
               ],
             ),
           ),
+
+          watchProviders.when(
+  data: (providers) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal:14),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Where to Watch', style: TextStyle(fontSize: 14,color:Color.fromARGB(255, 35, 97, 67), fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 10,
+          children: providers.map((p) {
+            final logoUrl = 'https://image.tmdb.org/t/p/w92${p['logo_path']}';
+            return Column(
+              children: [
+                Image.network(logoUrl, width: 50),
+                Text(p['provider_name'], style: const TextStyle(fontSize: 12)),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    ),
+  ),
+  loading: () => Center(child: const CircularProgressIndicator()),
+  error: (_, __) => const Text("Watch providers not found"),
+),
 
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -209,7 +243,6 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                   title: "Recommended Movies",
                   movies: recommendedMovies,
                   onTap: (movie) async {
-                    final key = await ref.read(mainTrailerKey(movie.id));
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -217,7 +250,7 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                             TestDetailsScreen(movieId: movie.id, movie: movie),
                       ),
                     );
-                  },
+                  }, seeAll: 'Recommended Movies',
                 ),
               );
             },
@@ -235,7 +268,6 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                   title: "Movies With A Similar Vibe",
                   movies: recommendedMovies,
                   onTap: (movie) async {
-                    final key = await ref.read(mainTrailerKey(movie.id));
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -243,27 +275,13 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
                             TestDetailsScreen(movieId: movie.id, movie: movie),
                       ),
                     );
-                  },
+                  }, seeAll: 'Similar Movies',
                 ),
               );
             },
             error: (e, _) => const Center(child: Text("Error occurred")),
             loading: () => const Center(child:MovieCarouselShimmer()),
           ),
-
-          //         relatedVideos.when(data: (vid){
-          //           if(vid.isEmpty) return SizedBox();
-          //           return ListView.builder(
-          //             shrinkWrap: true,
-          // physics: NeverScrollableScrollPhysics(),
-          //             itemCount: vid.length,
-          //             itemBuilder: (context, index){
-          //                log(vid[index].toString());
-          //             return ListTile(
-          //               onTap:() => _playVideo(vid[index]['key']),
-          //               title: Text(vid[index]['name']), );
-          //           });
-          //         }, error: (e,_) => Center(child: Center(child: Text("An error occured $e"),),), loading: () => Center(child: CircularProgressIndicator(),))
         ],
       ),
     );

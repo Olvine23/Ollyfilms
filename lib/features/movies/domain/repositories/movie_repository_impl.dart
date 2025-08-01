@@ -23,9 +23,30 @@ class MovieRepositoryImpl implements MovieRepository {
         .toList();
   }
 
+@override
+Future<List<Map<String, dynamic>>> getWatchProviders(int movieId, String countryCode) async {
+  return await apiService.fetchWatchProviders(movieId, countryCode);
+}
+
   @override
   Future<List<MovieEntity>> getSimilar(int movieId) async {
     final models = await apiService.fetchSimilar(movieId);
+
+    return models
+        .map(
+          (m) => MovieEntity(
+            id: m.id,
+            title: m.title,
+            overview: m.overview,
+            posterUrl: 'https://image.tmdb.org/t/p/w500${m.posterPath}',
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<List<MovieEntity>> getMoviesByGenre(int genreId) async {
+    final models = await apiService.fetchMoviesByGenre(genreId);
 
     return models
         .map(
@@ -87,8 +108,8 @@ class MovieRepositoryImpl implements MovieRepository {
   }
 
   @override
-  Future<List<MovieEntity>> getPopularMovies() async {
-    final models = await apiService.fetchPopularMovies();
+  Future<List<MovieEntity>> getPopularMovies({int page = 1}) async {
+    final models = await apiService.fetchPopularMovies(page: page);
     return models
         .map(
           (m) => MovieEntity(

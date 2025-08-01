@@ -46,11 +46,12 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 IconButton(
                   visualDensity: VisualDensity(horizontal: 2),
-                  
+
                   icon: Icon(
                     themeMode == ThemeMode.dark
                         ? Icons.wb_sunny
-                        : Icons.nightlight_round, size: 30,
+                        : Icons.nightlight_round,
+                    size: 30,
                   ),
                   onPressed: () {
                     final isDark = themeMode != ThemeMode.dark;
@@ -77,11 +78,11 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
       body: RefreshIndicator(
-        
         onRefresh: () => _refresh(),
         child: popular.when(
           data: (popularMovies) {
             final topRatedMovies = topRated.valueOrNull;
+            final notifier = ref.read(paginatedPopularProvider.notifier);
             return CustomScrollView(
               slivers: [
                 if (popularMovies.isNotEmpty)
@@ -91,15 +92,19 @@ class HomeScreen extends ConsumerWidget {
                       onTap: (movie) => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              TestDetailsScreen(movieId: movie.id, movie: movie),
+                          builder: (context) => TestDetailsScreen(
+                            movieId: movie.id,
+                            movie: movie,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                // const SizedBox(height: 16),
+                // const
+                //RoSizedBox(height: 16),
                 SliverToBoxAdapter(
                   child: MovieCarousel(
+                    onLoadMore: notifier.loadNextPage,
                     title: 'Popular',
                     movies: popularMovies.skip(1).toList(),
                     onTap: (movie) async {
@@ -107,14 +112,17 @@ class HomeScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              TestDetailsScreen(movieId: movie.id, movie: movie),
+                          builder: (context) => TestDetailsScreen(
+                            movieId: movie.id,
+                            movie: movie,
+                          ),
                         ),
                       );
                     },
+                    seeAll: 'Popular Movies',
                   ),
                 ),
-        
+
                 SliverToBoxAdapter(child: SizedBox(height: 12)),
                 // You can add more carousels here like Trending, Top Rated, etc.
                 if (topRatedMovies != null && topRatedMovies.isNotEmpty)
@@ -134,6 +142,7 @@ class HomeScreen extends ConsumerWidget {
                           ),
                         );
                       },
+                      seeAll: 'Top Rated Movies',
                     ),
                   ),
                 SliverToBoxAdapter(child: SizedBox(height: 12)),

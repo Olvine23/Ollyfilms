@@ -22,6 +22,7 @@ class MyApp extends ConsumerWidget {
       themeMode: themeMode, // 👈 Controls light/dark
 
       theme: ThemeData(
+        
         useMaterial3: true,
         brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
@@ -32,6 +33,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
+          // seedColor: Colors.blueAccent,
           seedColor: Colors.greenAccent,
           brightness: Brightness.dark,
         ),
