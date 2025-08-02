@@ -6,6 +6,7 @@ import 'package:movie_app/features/movies/presentation/screens/homescreen.dart';
 import 'package:movie_app/features/shared/widgets/bottom_nav.dart';
 
 void main() {
+  
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_app/features/movies/application/providers/movie_provider.dart';
 import 'package:movie_app/features/movies/application/providers/video_providers.dart';
@@ -6,6 +7,7 @@ import 'package:movie_app/features/movies/domain/entities/movie_entity.dart';
 import 'package:movie_app/features/movies/presentation/screens/watchlist/youtube_vids.dart';
 import 'package:movie_app/features/movies/presentation/widgets/movie_carousel.dart';
 import 'package:movie_app/features/movies/presentation/widgets/movier_caroussel_loader.dart';
+import 'package:movie_app/features/watchlist/presentation/widgets/watchlist_sheet.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class TestDetailsScreen extends ConsumerStatefulWidget {
@@ -42,7 +44,9 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
       if (key != null) {
         _controller = YoutubePlayerController(
           initialVideoId: key,
-          flags: const YoutubePlayerFlags(autoPlay: true, mute: false),
+          flags: const YoutubePlayerFlags(
+            forceHD: true,
+            autoPlay: true, mute: false),
         );
         setState(() {
           showPlayer = true;
@@ -65,6 +69,8 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light); // or dark
     _controller?.dispose();
     super.dispose();
   }
@@ -82,11 +88,19 @@ class _TestDetailsScreenState extends ConsumerState<TestDetailsScreen> {
     final similar = ref.watch(similarMoviesProvider(widget.movieId));
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+           showModalBottomSheet(
+      context: context,
+      builder: (_) => WatchlistSheet(movie: widget.movie),
+    );
+        },
+        child: Icon(Icons.add),
+
+      ),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        actions: [
-          Icon(Icons.favorite, size: 30,color: Colors.greenAccent,)
-        ],
+        
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
         backgroundColor: Colors.transparent,
